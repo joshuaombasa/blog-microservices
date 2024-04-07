@@ -17,7 +17,7 @@ app.post('/stories/:id/comments', async (request, response) => {
     commentsPerPostId[request.params.id] = comments
 
     try {
-        await axios.post('http://localhost:4010/events', {
+        await axios.post('http://event-bus-srv:4010/events', {
             type: 'CommentCreation',
             data: {
                 postId: request.params.id,
@@ -50,7 +50,7 @@ app.post('/events', async (request, response) => {
         selection.status = status
 
         try {
-            await axios.post('http://localhost:4010/events', {
+            await axios.post('http://event-bus-srv:4010/events', {
                 type: 'CommentUpdated',
                 data: {
                     postId,
