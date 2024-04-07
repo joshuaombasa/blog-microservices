@@ -4,8 +4,8 @@ metadata:
   name: comments-depl
 spec:
   replicas: 1
-  selector:
-    matchLabels:
+  selector: 
+    matchLabels: 
       app: comments
   template:
     metadata:
@@ -14,20 +14,20 @@ spec:
     spec:
       containers:
         - name: comments
-          image: joshuaombasa/comments
+          image: joshuaombasa/comments 
 
----
+
+--- 
 
 apiVersion: v1
 kind: Service
-metadata: 
+metadata:
   name: comments-srv
 spec:
-  type: ClusterIP
-  selector: 
+  selector:
     app: comments
-  ports: 
+  ports:
     - name: comments
-      protocol: TCP
       port: 4007
       targetPort: 4007
+
