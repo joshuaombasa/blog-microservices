@@ -17,7 +17,7 @@ app.post('/stories', async (request, response) => {
     stories[id] = { id, content }
 
     try {
-        await axios.post('http://localhost:4010/events', {
+        await axios.post('http://event-bus-srv:4010/events', {
             type: 'StoryCreation',
             data: { id, content }
         })
@@ -38,5 +38,5 @@ app.post('/events', (request, response) => {
 })
 
 app.listen(4006, () => {
-    console.log('server running on port 4006')
+    console.log('server is up and running on port 4006')
 })
