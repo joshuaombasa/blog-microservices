@@ -17,9 +17,9 @@ app.post('/events', async (request, response) => {
 
     try {
         await axios.post('http://stories-clusterip-srv:4006/events', { type, data })
-        // await axios.post('http://localhost:4007/events', { type, data })
-        // await axios.post('http://localhost:4009/events', { type, data })
-        // await axios.post('http://localhost:4008/events', { type, data })
+        await axios.post('http://comments-srv:4007/events', { type, data })
+        await axios.post('http://moderation-srv:4009/events', { type, data })
+        await axios.post('http://query-srv:4008/events', { type, data })
     } catch (error) {
         console.log(error)
     }
