@@ -16,7 +16,7 @@ app.post('/events', async (request, response) => {
         const { postId, id, comment, status } = data
         const moderatedStatus = comment.includes('sex') ? 'rejected' : 'approved'
 
-        const res = await axios.post('http://localhost:4010/events', {
+        const res = await axios.post('http://event-bus-srv:4010/events', {
             type: 'CommentModeration',
             data: { postId, id, comment, status: moderatedStatus }
         })
