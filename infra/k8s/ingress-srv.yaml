@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - host: stories.com
+      http:
+        paths:
+          - path: /stories/create
+            pathType: Prefix
+            backend:
+              service:
+                name: stories-clusterip-srv
+                port:
+                  number: 4006
+          - path: /stories
+            pathType: Prefix
+            backend:
+              service:
+                name: query-srv
+                port: 
+                  number: 4008
+          - path: /stories/?(.*)/comments
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: comments-srv
+                port:
+                  number: 4007
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: client-srv 
+                port:
+                  number: 80
