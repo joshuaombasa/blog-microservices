@@ -6,7 +6,7 @@ export default function CreateComment({ postId }) {
 
     async function handleSubmit(event) {
         event.preventDefault()
-        await axios.post(`http://localhost:4007/stories/${postId}/comments`, { comment: formData })
+        await axios.post(`http://stories.com/stories/${postId}/comments`, { comment: formData })
         setFormData('')
     }
     return (
