@@ -9,7 +9,7 @@ export default function StoriesList() {
     const [stories, setStories] = useState({})
 
     const fetchStories = async () => {
-        const res = await axios.get('http://localhost:4008/stories')
+        const res = await axios.get('http://stories.com/stories')
         setStories(res.data)
         console.log(res.data)
     }
