@@ -6,7 +6,7 @@ export default function CreateStory() {
 
     async function handleSubmit(event) {
         event.preventDefault()
-        await axios.post('http://localhost:4006/stories', { content: formData })
+        await axios.post('http://stories.com/stories/create', { content: formData })
         setFormData('')
     }
 
