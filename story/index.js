@@ -11,7 +11,7 @@ app.use(cors())
 app.use(express.json())
 
 
-app.post('/stories', async (request, response) => {
+app.post('/stories/create', async (request, response) => {
     const id = randomBytes(4).toString('hex')
     const content = request.body.content
     stories[id] = { id, content }
