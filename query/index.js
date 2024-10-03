@@ -9,6 +9,7 @@ app.use(cors())
 app.use(express.json())
 
 const handleEvents = (type, data) => {
+    
     if (type === 'StoryCreation') {
         const { id, content } = data
         stories[id] = { postId: id, content, comments: [] }
