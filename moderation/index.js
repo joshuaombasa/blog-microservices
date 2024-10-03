@@ -21,7 +21,7 @@ app.post('/events', async (request, response) => {
             data: { postId, id, comment, status: moderatedStatus }
         })
 
-    } 
+    }
 
     response.send({})
 })
