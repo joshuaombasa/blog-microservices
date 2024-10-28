@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata: 
   name: event-bus-depl
+  namespace: microservices-app
 spec:
   replicas: 3
   selector:
@@ -22,6 +23,7 @@ apiVersion: v1
 kind: Service
 metadata: 
   name: event-bus-srv
+  namespace: microservices-app
 spec:
   type: NodePort
   selector: 

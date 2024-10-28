@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: moderation-mongodb-pvc
+  namespace: microservices-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moderation-mongodb
+  namespace: microservices-app
+spec:
+  ports:
+    - port: 27017
+  selector:
+    app: moderation-mongodb
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moderation-mongodb
+  namespace: microservices-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moderation-mongodb
+  template:
+    metadata:
+      labels:
+        app: moderation-mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:4.4
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: moderation_user
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: moderation_password
+            - name: MONGO_INITDB_DATABASE
+              value: moderation_db
+          volumeMounts:
+            - mountPath: /data/db
+              name: moderation-mongodb-storage
+      volumes:
+        - name: moderation-mongodb-storage
+          persistentVolumeClaim:
+            claimName: moderation-mongodb-pvc

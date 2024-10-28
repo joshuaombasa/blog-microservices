@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: event-bus-mongodb-pvc
+  namespace: microservices-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-bus-mongodb
+  namespace: microservices-app
+spec:
+  ports:
+    - port: 27017
+  selector:
+    app: event-bus-mongodb
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-bus-mongodb
+  namespace: microservices-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-bus-mongodb
+  template:
+    metadata:
+      labels:
+        app: event-bus-mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:4.4
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: eventbus_user
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: eventbus_password
+            - name: MONGO_INITDB_DATABASE
+              value: eventbus_db
+          volumeMounts:
+            - mountPath: /data/db
+              name: event-bus-mongodb-storage
+      volumes:
+        - name: event-bus-mongodb-storage
+          persistentVolumeClaim:
+            claimName: event-bus-mongodb-pvc
