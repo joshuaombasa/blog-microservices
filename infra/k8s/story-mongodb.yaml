@@ -9,6 +9,7 @@ spec:
   resources:
     requests:
       storage: 1Gi
+  storageClassName: standard  # specify your storage class here (adjust if needed)
 
 ---
 apiVersion: v1
@@ -17,8 +18,12 @@ metadata:
   name: story-mongodb
   namespace: microservices-app
 spec:
+  type: ClusterIP
   ports:
     - port: 27017
+      targetPort: 27017
+      protocol: TCP
+      name: mongodb
   selector:
     app: story-mongodb
 
@@ -45,9 +50,15 @@ spec:
             - containerPort: 27017
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
-              value: story_user
+              valueFrom:
+                secretKeyRef:
+                  name: story-mongodb-secret
+                  key: username
             - name: MONGO_INITDB_ROOT_PASSWORD
-              value: story_password
+              valueFrom:
+                secretKeyRef:
+                  name: story-mongodb-secret
+                  key: password
             - name: MONGO_INITDB_DATABASE
               value: story_db
           volumeMounts:
