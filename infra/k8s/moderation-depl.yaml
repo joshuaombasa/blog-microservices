@@ -1,35 +1,68 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
   name: moderation-depl
   namespace: microservices-app
-spec: 
-  replicas: 1
+  labels:
+    app: moderation
+    tier: backend
+spec:
+  replicas: 2   # Increased for better availability
   selector:
     matchLabels:
       app: moderation
-  template: 
+  template:
     metadata:
       labels:
         app: moderation
+        tier: backend
     spec:
       containers:
         - name: moderation
-          image: joshuaombasa/moderation 
+          image: joshuaombasa/moderation:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 4009
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "4009"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4009
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4009
+            initialDelaySeconds: 15
+            periodSeconds: 20
 
-
---- 
+---
 
 apiVersion: v1
 kind: Service
-metadata: 
+metadata:
   name: moderation-srv
   namespace: microservices-app
+  labels:
+    app: moderation
 spec:
   selector:
     app: moderation
   ports:
-    - name: moderation
+    - name: http
       protocol: TCP
       port: 4009
       targetPort: 4009
+  type: ClusterIP   # For internal service; use LoadBalancer if external access is needed
