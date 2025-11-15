@@ -11,31 +11,38 @@ spec:
     - host: stories.com
       http:
         paths:
-          - path: /stories/create
-            pathType: Prefix
+          # CREATE Story
+          - path: ^/stories/create$
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: stories-clusterip-srv
                 port:
                   number: 4006
-          - path: /stories
-            pathType: Prefix
+
+          # GET Stories (Query Service)
+          - path: ^/stories/?$
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: query-srv
-                port: 
+                port:
                   number: 4008
-          - path: /stories/?(.*)/comments
+
+          # Story Comments (Regex route)
+          - path: ^/stories/.*/comments$
             pathType: ImplementationSpecific
             backend:
               service:
                 name: comments-srv
                 port:
                   number: 4007
+
+          # Client frontend (default)
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: client-srv 
+                name: client-srv
                 port:
                   number: 80
