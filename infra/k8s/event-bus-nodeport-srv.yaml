@@ -1,15 +1,18 @@
 apiVersion: v1
 kind: Service
-metadata: 
+metadata:
   name: eventbus-nodeport-srv
   namespace: microservices-app
+  labels:
+    app: event-bus
+    component: eventbus
 spec:
   type: NodePort
-  selector: 
+  selector:
     app: event-bus
-  ports: 
+  ports:
     - name: event-bus
       protocol: TCP
-      port: 4010
-      targetPort: 4010
-
+      port: 4010         
+      targetPort: 4010    
+      nodePort: 30010     
