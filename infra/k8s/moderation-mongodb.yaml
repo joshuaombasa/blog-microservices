@@ -17,8 +17,11 @@ metadata:
   name: moderation-mongodb
   namespace: microservices-app
 spec:
+  type: ClusterIP
   ports:
-    - port: 27017
+    - name: mongo
+      port: 27017
+      targetPort: 27017
   selector:
     app: moderation-mongodb
 
@@ -41,18 +44,32 @@ spec:
       containers:
         - name: mongodb
           image: mongo:4.4
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 27017
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
-              value: moderation_user
+              valueFrom:
+                secretKeyRef:
+                  name: moderation-mongodb-secret
+                  key: username
             - name: MONGO_INITDB_ROOT_PASSWORD
-              value: moderation_password
+              valueFrom:
+                secretKeyRef:
+                  name: moderation-mongodb-secret
+                  key: password
             - name: MONGO_INITDB_DATABASE
               value: moderation_db
           volumeMounts:
-            - mountPath: /data/db
-              name: moderation-mongodb-storage
+            - name: moderation-mongodb-storage
+              mountPath: /data/db
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
       volumes:
         - name: moderation-mongodb-storage
           persistentVolumeClaim:
