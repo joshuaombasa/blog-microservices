@@ -3,14 +3,15 @@ kind: PersistentVolumeClaim
 metadata:
   name: event-bus-mongodb-pvc
   namespace: microservices-app
+  labels:
+    app: event-bus-mongodb
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
-  # Optional: add storageClassName if you want a specific storage class
-  # storageClassName: standard
+      storage: 5Gi
+  storageClassName: standard
 
 ---
 apiVersion: v1
@@ -18,14 +19,17 @@ kind: Service
 metadata:
   name: event-bus-mongodb
   namespace: microservices-app
+  labels:
+    app: event-bus-mongodb
 spec:
   selector:
     app: event-bus-mongodb
   ports:
-    - port: 27017
+    - name: mongo
+      port: 27017
       targetPort: 27017
       protocol: TCP
-  type: ClusterIP  # default, can be changed to LoadBalancer or NodePort if needed
+  type: ClusterIP
 
 ---
 apiVersion: apps/v1
@@ -33,8 +37,11 @@ kind: Deployment
 metadata:
   name: event-bus-mongodb
   namespace: microservices-app
+  labels:
+    app: event-bus-mongodb
 spec:
   replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: event-bus-mongodb
@@ -43,11 +50,15 @@ spec:
       labels:
         app: event-bus-mongodb
     spec:
+      securityContext:
+        fsGroup: 999
       containers:
         - name: mongodb
           image: mongo:4.4
+          imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 27017
+            - name: mongo
+              containerPort: 27017
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
@@ -62,8 +73,25 @@ spec:
             - name: MONGO_INITDB_DATABASE
               value: eventbus_db
           volumeMounts:
-            - mountPath: /data/db
-              name: event-bus-mongodb-storage
+            - name: event-bus-mongodb-storage
+              mountPath: /data/db
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 10
+            periodSeconds: 5
       volumes:
         - name: event-bus-mongodb-storage
           persistentVolumeClaim:
